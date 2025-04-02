@@ -1,0 +1,41 @@
+.custom-toc {
+	position: fixed;
+	top: 40px;
+	right: 20px;
+	width: 250px;
+	background: #fff;
+	border: 1px solid #ccc;
+	padding: 1em;
+	font-family: sans-serif;
+	font-size: 14px;
+	z-index: 9999;
+	max-height: 80vh;
+	overflow-y: auto;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.custom-toc ul {
+	list-style: none;
+	padding-left: 0;
+}
+
+.custom-toc li {
+	margin-bottom: 0.5em;
+	padding: 5px 10px;
+	border-radius: 5px;
+	background-color: #ffe8e8;
+	border-bottom: 1px solid #fdd;
+}
+
+.custom-toc li:hover {
+	background: #fdd;
+}
+
+.custom-toc a {
+	text-decoration: none;
+	color: #0066cc;
+}
+
+.custom-toc a:hover {
+	text-decoration: none;
+}
