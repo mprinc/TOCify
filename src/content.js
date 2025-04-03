@@ -6,9 +6,18 @@ let sectionSelector;
 
 const waitForArticles = (selector, timeout = 10000) => {
 	return new Promise((resolve, reject) => {
+		const existing = document.querySelectorAll(selector);
+		if (existing.length > 0) {
+			console.info(`${appTitle} Found ${existing.length} sections immediately`);
+			return resolve(Array.from(existing));
+		}
+
+		console.info(`${appTitle} No sections found immediately, waiting for DOM mutations...`);
+
 		const observer = new MutationObserver(() => {
 			const articles = document.querySelectorAll(selector);
 			if (articles.length > 0) {
+				console.info(`${appTitle} Found ${articles.length} sections via MutationObserver`);
 				observer.disconnect();
 				resolve(Array.from(articles));
 			}
@@ -21,9 +30,44 @@ const waitForArticles = (selector, timeout = 10000) => {
 			reject(new Error("Timeout waiting for articles"));
 		}, timeout);
 	});
-}
+};
+
+const getSections = async (selector) => {
+	let sections;
+
+	try {
+		console.info(`${appTitle} Looking for sections with selector "${selector}"...`);
+		sections = await waitForArticles(sectionSelector);
+	} catch (err) {
+		console.warn(`${appTitle} Sections not found in time: ${err}`);
+		return;
+	}
+
+	// any sections to process?
+	if (!sections.length) {
+		console.info(`${appTitle} No sections found with selector "${sectionSelector}", exiting.`);
+		return;
+	} else {
+		console.info(`${appTitle} Found ${sections.length} sections with selector "${sectionSelector}".`);
+	}
+
+	// Sort alphabetically by innerText (example reorganization)
+	// sections.sort((a, b) => a.innerText.localeCompare(b.innerText));
+
+	// const container = sections[0].parentNode;
+
+	// Clear and re-append sorted
+	sections.forEach((s, i) => {
+		s.id = `section-${i + 1}`;
+		//   container.appendChild(s);
+	});
+
+	return sections;
+};
 
 const generateTOC = (sections) => {
+	document.querySelector(".mPrinC__toc")?.remove(); // Remove old TOC
+
 	// Build TOC
 	const toc = document.createElement("div");
 	toc.className = "mPrinC__toc";
@@ -34,7 +78,7 @@ const generateTOC = (sections) => {
 	header.innerHTML = `
 	<div class="mPrinC__toc-header-inner">
 		<span>
-			<span class="mPrinC__toc-header-title-1">${appTitle1}</span><span class="mPrinC__toc-header-title-2">${appTitle2}</span>
+			<img src="${chrome.runtime.getURL("logo.png")}" alt="TOCify logo" height="35px" width="35px"/>
 		</span>
 		<span>
 			<a href="https://github.com/mprinc/TOCify" title="View on GitHub" target="_blank" rel="noopener noreferrer">
@@ -59,13 +103,7 @@ const generateTOC = (sections) => {
 	// Add reload functionality
 	header.querySelector(".mPrinC__toc-header-reload").addEventListener("click", async () => {
 		console.info(`${appTitle} Reloading...`);
-		try {
-			sections = await waitForArticles(sectionSelector);
-		} catch (err) {
-			console.warn("Articles not found in time:", err);
-			return;
-		}
-		document.querySelector(".mPrinC__toc")?.remove(); // Remove old TOC
+		const sections = await getSections(sectionSelector);
 		generateTOC(sections); // Re-generate
 	});
 
@@ -101,7 +139,27 @@ const generateTOC = (sections) => {
 	document.body.appendChild(toc);
 }
 
+const generateTOCShowHideButton = () => {
+	const toggleButton = document.createElement("div");
+	toggleButton.className = "mPrinC__toc-toggle";
+	toggleButton.title = "Show/Hide TOC";
+	toggleButton.innerHTML = `
+		<img src="${chrome.runtime.getURL("logo.png")}" alt="TOCify logo"/>
+	`;
+	document.body.appendChild(toggleButton);
+	
+	toggleButton.addEventListener("click", () => {
+		const toc = document.querySelector(".mPrinC__toc");
+		if (!toc) return;
+	
+		toc.style.display = toc.style.display === "none" ? "flex" : "none";
+	});
+};
+
 (async () => {
+
+	generateTOCShowHideButton();
+
 	const hostname = window.location.hostname;
 
 	// Load config
@@ -119,33 +177,6 @@ const generateTOC = (sections) => {
 	}
 
 	sectionSelector = config.sectionSelector || "article";
-	let sections;
-
-	try {
-		sections = await waitForArticles(sectionSelector);
-	} catch (err) {
-		console.warn("Articles not found in time:", err);
-		return;
-	}
-
-	// any sections to process?
-	if (!sections.length) {
-		console.info(`${appTitle} No sections found with selector "${sectionSelector}", exiting.`);
-		return;
-	} else {
-		console.info(`${appTitle} Found ${sections.length} sections with selector "${sectionSelector}".`);
-	}
-
-	// Sort alphabetically by innerText (example reorganization)
-	// sections.sort((a, b) => a.innerText.localeCompare(b.innerText));
-
-	// const container = sections[0].parentNode;
-
-	// Clear and re-append sorted
-	sections.forEach((s, i) => {
-		s.id = `section-${i + 1}`;
-		//   container.appendChild(s);
-	});
-
+	const sections = await getSections(sectionSelector);
 	generateTOC(sections);
 })();

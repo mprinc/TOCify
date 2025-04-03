@@ -82,3 +82,27 @@
 .mPrinC__toc a:hover {
 	text-decoration: none;
 }
+
+/* Show/Hide button */
+
+.mPrinC__toc-toggle {
+	position: fixed;
+	top: 10px;
+	right: 70px;
+	width: 35px;
+	height: 35px;
+	background: white;
+	/* border: 1px solid #ccc; */
+	/* border-radius: 50%; */
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+	cursor: pointer;
+	z-index: 10005;
+	/* padding: 4px; */
+	transition: transform 0.3s ease;
+}
+.mPrinC__toc-toggle:hover {
+	transform: scale(1.1);
+}
+.mPrinC__toc-toggle img {
+	display: block;
+}
