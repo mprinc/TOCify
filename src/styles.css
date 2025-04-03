@@ -1,25 +1,68 @@
-.custom-toc {
+.mPrinC__toc {
 	position: fixed;
-	top: 40px;
-	right: 20px;
-	width: 250px;
+	top: 50px; /* Adjust depending on your page header */
+	right: 10px;
+	width: 200px;
 	background: #fff;
 	border: 1px solid #ccc;
-	padding: 1em;
 	font-family: sans-serif;
 	font-size: 14px;
 	z-index: 9999;
 	max-height: 80vh;
 	overflow-y: auto;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	display: flex;
+	flex-direction: column;
 }
 
-.custom-toc ul {
+.mPrinC__toc-header {
+	position: sticky;
+	top: 0;
+	z-index: 1;
+	background-color: #fefefe;
+	border-bottom: 1px solid #ccc;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+	padding: 5px 15px;
+}
+
+.mPrinC__toc-header-inner {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.mPrinC__toc-header-title-1 {
+	font-size: 16px;
+	font-weight: bold;
+	color: #0000bb;
+}
+.mPrinC__toc-header-title-2 {
+	font-size: 16px;
+	font-weight: bold;
+	color: #8888ff;
+}
+
+.mPrinC__toc-header-reload {
+	background: #d9534f;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	border-radius: 3px;
+	cursor: pointer;
+	font-size: 13px;
+}
+
+.mPrinC__toc-header-reload:hover {
+	background: #c9302c;
+}
+
+.mPrinC__toc ul {
 	list-style: none;
-	padding-left: 0;
+	padding: 5px;
+	margin: 0;
 }
 
-.custom-toc li {
+.mPrinC__toc li {
 	margin-bottom: 0.5em;
 	padding: 5px 10px;
 	border-radius: 5px;
@@ -27,15 +70,15 @@
 	border-bottom: 1px solid #fdd;
 }
 
-.custom-toc li:hover {
+.mPrinC__toc li:hover {
 	background: #fdd;
 }
 
-.custom-toc a {
+.mPrinC__toc a {
 	text-decoration: none;
 	color: #0066cc;
 }
 
-.custom-toc a:hover {
+.mPrinC__toc a:hover {
 	text-decoration: none;
 }

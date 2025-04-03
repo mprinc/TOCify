@@ -1,4 +1,6 @@
-const appTitle = "TOC-generator";
+const appTitle = "TOCify";
+const appTitle1 = "TOC";
+const appTitle2 = "ify";
 
 const waitForArticles = (selector, timeout = 10000) => {
 	return new Promise((resolve, reject) => {
@@ -22,9 +24,52 @@ const waitForArticles = (selector, timeout = 10000) => {
 const generateTOC = (sections) => {
 	// Build TOC
 	const toc = document.createElement("div");
-	toc.className = "custom-toc";
-	toc.innerHTML = "<h4>TOC</h4><ul></ul>";
-	const ul = toc.querySelector("ul");
+	toc.className = "mPrinC__toc";
+
+	// Inject fixed header with title and reload button
+	const header = document.createElement("div");
+	header.className = "mPrinC__toc-header";
+	header.innerHTML = `
+	<div class="mPrinC__toc-header-inner">
+		<span>
+			<span class="mPrinC__toc-header-title-1">${appTitle1}</span><span class="mPrinC__toc-header-title-2">${appTitle2}</span>
+		</span>
+		<span>
+			<a href="https://github.com/mprinc/TOCify" title="View on GitHub" target="_blank" rel="noopener noreferrer">
+				<svg height="20" viewBox="0 0 16 16" width="20" aria-hidden="true" fill="#333">
+					<path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 
+					0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+					-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+					-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 
+					0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 2-.27 7.6 7.6 0 0 1 2 .27c1.53-1.04 2.2-.82 
+					2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 
+					0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 
+					0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 
+					0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+				</svg>
+			</a>
+		</span>
+		<button class="mPrinC__toc-header-reload" title="Reload TOC">⟳ Reload</button>
+	</div>
+`;
+	toc.appendChild(header);
+
+	// Add reload functionality
+	header.querySelector(".mPrinC__toc-header-reload").addEventListener("click", async () => {
+		console.info(`${appTitle} Reloading...`);
+		try {
+			sections = await waitForArticles(selector);
+		} catch (err) {
+			console.warn("Articles not found in time:", err);
+			return;
+		}
+		document.querySelector(".mPrinC__toc")?.remove(); // Remove old TOC
+		generateTOC(sections); // Re-generate
+	});
+
+	// Inject toc list
+	const tocList = document.createElement("ul");
+	toc.appendChild(tocList);
 
 	let questionId = 1;
 	sections.forEach((s, i) => {
@@ -44,11 +89,11 @@ const generateTOC = (sections) => {
 		const a = document.createElement("a");
 		a.href = `#section-${i + 1}`;
 		a.innerHTML = `<bold style="color: #aaaaff">${questionId}. ${titleText}:</bold> ${messageTextShort}`;
-		questionId ++;
+		questionId++;
 
-		const li = document.createElement("li");
-		li.appendChild(a);
-		ul.appendChild(li);
+		const contentEntry = document.createElement("li");
+		contentEntry.appendChild(a);
+		tocList.appendChild(contentEntry);
 	});
 
 	document.body.appendChild(toc);
@@ -70,8 +115,6 @@ const generateTOC = (sections) => {
 	} else {
 		console.info(`${appTitle} Hostname "${hostname}" is of interest.`);
 	}
-
-
 
 	const selector = config.sectionSelector || "article";
 	let sections;
