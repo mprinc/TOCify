@@ -157,9 +157,6 @@ const generateTOCShowHideButton = () => {
 };
 
 (async () => {
-
-	generateTOCShowHideButton();
-
 	const hostname = window.location.hostname;
 
 	// Load config
@@ -176,6 +173,7 @@ const generateTOCShowHideButton = () => {
 		console.info(`${appTitle} Hostname "${hostname}" is of interest.`);
 	}
 
+	generateTOCShowHideButton();
 	sectionSelector = config.sectionSelector || "article";
 	const sections = await getSections(sectionSelector);
 	generateTOC(sections);
