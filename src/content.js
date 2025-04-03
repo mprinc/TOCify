@@ -2,6 +2,8 @@ const appTitle = "TOCify";
 const appTitle1 = "TOC";
 const appTitle2 = "ify";
 
+let sectionSelector;
+
 const waitForArticles = (selector, timeout = 10000) => {
 	return new Promise((resolve, reject) => {
 		const observer = new MutationObserver(() => {
@@ -58,7 +60,7 @@ const generateTOC = (sections) => {
 	header.querySelector(".mPrinC__toc-header-reload").addEventListener("click", async () => {
 		console.info(`${appTitle} Reloading...`);
 		try {
-			sections = await waitForArticles(selector);
+			sections = await waitForArticles(sectionSelector);
 		} catch (err) {
 			console.warn("Articles not found in time:", err);
 			return;
@@ -116,11 +118,11 @@ const generateTOC = (sections) => {
 		console.info(`${appTitle} Hostname "${hostname}" is of interest.`);
 	}
 
-	const selector = config.sectionSelector || "article";
+	sectionSelector = config.sectionSelector || "article";
 	let sections;
 
 	try {
-		sections = await waitForArticles(selector);
+		sections = await waitForArticles(sectionSelector);
 	} catch (err) {
 		console.warn("Articles not found in time:", err);
 		return;
@@ -128,10 +130,10 @@ const generateTOC = (sections) => {
 
 	// any sections to process?
 	if (!sections.length) {
-		console.info(`${appTitle} No sections found with selector "${selector}", exiting.`);
+		console.info(`${appTitle} No sections found with selector "${sectionSelector}", exiting.`);
 		return;
 	} else {
-		console.info(`${appTitle} Found ${sections.length} sections with selector "${selector}".`);
+		console.info(`${appTitle} Found ${sections.length} sections with selector "${sectionSelector}".`);
 	}
 
 	// Sort alphabetically by innerText (example reorganization)
